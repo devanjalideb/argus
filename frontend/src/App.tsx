@@ -9,20 +9,38 @@ import Watchtower from "./pages/Watchtower";
 import BlastRadius from "./pages/BlastRadius";
 import RiskMemory from "./pages/RiskMemory";
 import KnowledgeGraphPage from "./pages/KnowledgeGraph";
+import EntityExplorer from "./pages/EntityExplorer";
 import Reports from "./pages/Reports";
 import Integrations from "./pages/Integrations";
+import CaseManagement from "./pages/CaseManagement";
 import Settings from "./pages/Settings";
 
-const NAV = [
-  { to: "/", icon: "queue", label: "Investigation Queue", end: true },
-  { to: "/watchtower", icon: "watchtower", label: "Watchtower" },
-  { to: "/blast-radius", icon: "blast", label: "Blast Radius" },
-  { to: "/risk-memory", icon: "risk", label: "Risk Memory" },
-  { to: "/knowledge-graph", icon: "graph", label: "Knowledge Graph" },
-  { to: "/reports", icon: "reports", label: "Reports" },
-  { to: "/integrations", icon: "integrations", label: "Integrations" },
-  { to: "/settings", icon: "settings", label: "Settings" },
+const NAV_GROUPS = [
+  {
+    group: "Investigate",
+    items: [
+      { to: "/", icon: "queue", label: "Investigation Queue", end: true },
+      { to: "/watchtower", icon: "watchtower", label: "Watchtower" },
+      { to: "/blast-radius", icon: "blast", label: "Blast Radius" },
+      { to: "/risk-memory", icon: "risk", label: "Risk Memory" },
+      { to: "/knowledge-graph", icon: "graph", label: "Knowledge Graph" },
+      { to: "/entity-explorer", icon: "user", label: "Entity Explorer" },
+    ],
+  },
+  {
+    group: "Platform",
+    items: [
+      { to: "/reports", icon: "reports", label: "Reports" },
+      { to: "/integrations", icon: "integrations", label: "Integrations" },
+      { to: "/case-management", icon: "file", label: "Case Management" },
+    ],
+  },
+  {
+    group: "Admin",
+    items: [{ to: "/settings", icon: "settings", label: "Settings" }],
+  },
 ];
+const ALL_NAV = NAV_GROUPS.flatMap((g) => g.items);
 
 function useTheme(): [string, () => void] {
   const [theme, setTheme] = useState(() => localStorage.getItem("argus-theme") || "dark");
@@ -61,7 +79,7 @@ function CommandPalette({ open, onClose }: { open: boolean; onClose: () => void 
               <span>{r.title}</span>
             </div>
           ))}
-          {results.length === 0 && NAV.map((n) => (
+          {results.length === 0 && ALL_NAV.map((n) => (
             <div key={n.to} className="cmdk-item" onClick={() => go(n.to)}>
               <Icon name={n.icon} size={15} /> {n.label}
             </div>
@@ -105,36 +123,34 @@ function Shell() {
     <div className="app">
       <aside className="sidebar">
         <div className="brand">
-          <div className="logo">A</div>
-          <div className="name">ARGUS<small>Decision Intelligence</small></div>
+          <div className="logo"><Icon name="watchtower" size={17} /></div>
+          <div className="name">ARGUS<small>AI Cyber Decision Intel</small></div>
         </div>
         <nav className="nav">
-          <div className="nav-label">Investigate</div>
-          {NAV.slice(0, 5).map((n) => (
-            <NavLink key={n.to} to={n.to} end={n.end}
-                     className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
-              <Icon name={n.icon} size={17} /> {n.label}
-              {n.to === "/" && crit > 0 && <span className="badge-count">{crit}</span>}
-            </NavLink>
-          ))}
-          <div className="nav-label">Platform</div>
-          {NAV.slice(5).map((n) => (
-            <NavLink key={n.to} to={n.to}
-                     className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
-              <Icon name={n.icon} size={17} /> {n.label}
-            </NavLink>
+          {NAV_GROUPS.map((g) => (
+            <React.Fragment key={g.group}>
+              <div className="nav-label">{g.group}</div>
+              {g.items.map((n) => (
+                <NavLink key={n.to} to={n.to} end={(n as any).end}
+                         className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`}>
+                  <Icon name={n.icon} size={17} /> {n.label}
+                  {n.to === "/" && crit > 0 && <span className="badge-count">{crit}</span>}
+                </NavLink>
+              ))}
+            </React.Fragment>
           ))}
         </nav>
         <div className="sidebar-foot">
-          <div className="tagline">"We don't generate alerts.<br />We generate decisions."</div>
+          <span className="eye"><Icon name="watchtower" size={13} /></span>
+          <div className="tagline">We don't generate alerts.<br />We generate decisions.</div>
         </div>
       </aside>
 
       <div className="main">
         <header className="topbar">
           <div className="search" onClick={() => setCmd(true)}>
-            <Icon name="search" size={16} />
-            <input placeholder="Search investigations, customers, endpoints…" readOnly />
+            <Icon name="search" size={15} />
+            <input placeholder="Search investigations, customers, endpoints, IPs…" readOnly />
             <span className="kbd">⌘K</span>
           </div>
           <div className="topbar-actions">
@@ -159,8 +175,10 @@ function Shell() {
           <Route path="/blast-radius" element={<BlastRadius />} />
           <Route path="/risk-memory" element={<RiskMemory />} />
           <Route path="/knowledge-graph" element={<KnowledgeGraphPage />} />
+          <Route path="/entity-explorer" element={<EntityExplorer />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/integrations" element={<Integrations />} />
+          <Route path="/case-management" element={<CaseManagement />} />
           <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>

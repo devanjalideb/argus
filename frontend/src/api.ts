@@ -27,6 +27,7 @@ export const api = {
   investigations: (q: Record<string, any> = {}) =>
     req(`/investigations?${new URLSearchParams(q as any)}`),
   summary: () => req("/investigations/summary"),
+  commandCenter: () => req("/investigations/command-center"),
   investigation: (code: string) => req(`/investigations/${code}`),
   assign: (code: string, analyst: string) => post(`/investigations/${code}/assign`, { analyst }),
   setStatus: (code: string, status: string, note?: string) =>

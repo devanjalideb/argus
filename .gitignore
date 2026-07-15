@@ -23,6 +23,7 @@ npm-debug.log*
 reports_output/*.pdf
 reports_output/*.json
 reports_output/*.csv
+design-review/
 *.log
 *.sqlite3
 *.db
