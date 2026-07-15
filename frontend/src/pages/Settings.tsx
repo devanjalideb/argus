@@ -27,7 +27,7 @@ export default function Settings() {
         </Card>
 
         <Card title="AI Decision Layer" icon="cpu">
-          <Row k="Provider" v="OpenRouter (optional)" />
+          <Row k="Provider" v={i.ai?.provider === "gemini" ? "Google Gemini" : titleCase(i.ai?.provider || "offline fallback")} />
           <Row k="Model" v={i.ai?.model || "—"} />
           <Row k="Live" v={i.ai?.live ? "Yes" : "Offline grounded narrator"} />
           <Row k="Grounding" v="Strict — explains evidence only" />

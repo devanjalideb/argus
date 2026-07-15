@@ -11,6 +11,14 @@ from app.core.response import success
 router = APIRouter(prefix="/system", tags=["system"])
 
 
+def _ai_provider() -> str:
+    """Reflect the actual configured LLM provider (Gemini via OpenAI-compat, OpenRouter,
+    or the offline grounded fallback)."""
+    if not (settings.ai_enabled and settings.openrouter_api_key):
+        return "offline-grounded-fallback"
+    return "gemini" if "googleapis" in settings.openrouter_base_url else "openrouter"
+
+
 @router.get("/health", summary="Liveness probe")
 def health():
     """Confirms the application process is up and serving requests."""
@@ -26,16 +34,11 @@ def health():
 def ready():
     """Verifies database connectivity and AI provider configuration."""
     db_ok = check_connection()
-    ai_provider = (
-        "openrouter"
-        if settings.ai_enabled and settings.openrouter_api_key
-        else "offline-grounded-fallback"
-    )
     return success({
         "ready": db_ok,
         "checks": {
             "database": "ok" if db_ok else "unreachable",
-            "ai_provider": ai_provider,
+            "ai_provider": _ai_provider(),
             "ai_live": bool(settings.ai_enabled and settings.openrouter_api_key),
         },
     })
@@ -58,7 +61,7 @@ def info():
         },
         "ai": {
             "enabled": settings.ai_enabled,
-            "provider": "openrouter",
+            "provider": _ai_provider(),
             "model": settings.openrouter_model,
             "live": bool(settings.ai_enabled and settings.openrouter_api_key),
         },

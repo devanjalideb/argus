@@ -39,7 +39,7 @@ export default function Integrations() {
             <div className="between"><span className="muted">Database name</span><b>{i.database?.database}</b></div>
             <div className="between"><span className="muted">AI provider</span><span className="chip">{titleCase(ai.provider || "offline")}</span></div>
             <div className="between"><span className="muted">AI model</span><b style={{ fontSize: 12 }}>{ai.model}</b></div>
-            <div className="between"><span className="muted">AI live</span><b>{ai.live ? "Yes (OpenRouter)" : "Offline grounded fallback"}</b></div>
+            <div className="between"><span className="muted">AI live</span><b>{ai.live ? `Yes (${ai.provider === "gemini" ? "Google Gemini" : "OpenRouter"})` : "Offline grounded fallback"}</b></div>
             <div className="between"><span className="muted">Version</span><b>{i.version}</b></div>
             <div className="between"><span className="muted">Environment</span><b>{i.environment}</b></div>
           </div>

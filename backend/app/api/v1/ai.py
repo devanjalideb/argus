@@ -16,8 +16,10 @@ router = APIRouter(prefix="/ai", tags=["explainable-ai"])
 @router.get("/status", summary="AI provider status")
 def status():
     live = settings.ai_enabled and bool(settings.openrouter_api_key)
+    provider = (("gemini" if "googleapis" in settings.openrouter_base_url else "openrouter")
+                if live else "offline-grounded-narrator")
     return success({
-        "provider": "openrouter" if live else "offline-grounded-narrator",
+        "provider": provider,
         "model": settings.openrouter_model if live else "argus-grounded-narrator-v1",
         "live": live,
         "note": "Narratives are strictly grounded in structured evidence; offline fallback "
