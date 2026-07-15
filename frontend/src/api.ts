@@ -49,6 +49,7 @@ export const api = {
   riskSearch: (q: string) => req(`/risk-memory/search?q=${encodeURIComponent(q)}`),
   riskCustomer: (ref: string) => req(`/risk-memory/customer/${ref}`),
   riskRecompute: () => post("/risk-memory/recompute"),
+  entityCustomer: (ref: string) => req(`/entity/customer/${ref}`),
 
   // business impact + ai + graph
   impact: (code: string) => req(`/business-impact/${code}`),

@@ -8,6 +8,7 @@ from . import (
     auth,
     blast_radius,
     business_impact,
+    entity,
     ingestion,
     investigations,
     knowledge_graph,
@@ -28,6 +29,7 @@ api_router.include_router(investigations.router)
 api_router.include_router(watchtower.router)
 api_router.include_router(blast_radius.router)
 api_router.include_router(business_impact.router)
+api_router.include_router(entity.router)
 api_router.include_router(ai.router)
 api_router.include_router(knowledge_graph.router)
 api_router.include_router(reports.router)
