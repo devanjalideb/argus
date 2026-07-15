@@ -14,9 +14,10 @@ venv/
 
 # ---- Node / React ----
 node_modules/
-frontend/dist/
 frontend/.vite/
 npm-debug.log*
+# NOTE: frontend/dist IS committed so the app runs from a clone with just Python
+# (no Node needed). Rebuild with `npm run build` in frontend/ after UI changes.
 
 # ---- Generated artifacts ----
 reports_output/*.pdf

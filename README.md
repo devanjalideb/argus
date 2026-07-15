@@ -41,6 +41,29 @@ Graph**, deterministic **Recommendations**, and exportable **Reports**.
 
 ## Quick start
 
+### Easiest — cloned from GitHub (Windows, Python only, no Node, no MySQL)
+
+Only requirement: **Python 3.11+** installed (tick *"Add python.exe to PATH"* during install).
+
+```powershell
+git clone https://github.com/devanjalideb/argus
+cd argus
+.\run-portable.bat
+```
+
+`run-portable.bat` creates its own Python environment, builds a local **SQLite**
+database, seeds the synthetic bank + 6 investigations, and opens
+**http://localhost:8000**. First run takes ~2 minutes (installing dependencies); after
+that it's instant. Close the "ARGUS server" window to stop it.
+
+AI narratives use the built-in **offline** engine out of the box. For **live Gemini**,
+copy `backend\.env.example` to `backend\.env` and set `OPENROUTER_API_KEY` to your own
+Google AI Studio key (https://aistudio.google.com/apikey) with
+`OPENROUTER_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai` and
+`OPENROUTER_MODEL=gemini-flash-lite-latest`.
+
+### Full stack (MySQL + live AI)
+
 You need a running **MySQL 8** and its root password. Three ways to run:
 
 ### Option A — Windows (native)
