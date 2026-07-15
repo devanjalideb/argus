@@ -1,0 +1,33 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---- Env & secrets ----
+.env
+*.local
+
+# ---- Node / React ----
+node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+
+# ---- Generated artifacts ----
+reports_output/*.pdf
+reports_output/*.json
+reports_output/*.csv
+*.log
+*.sqlite3
+*.db
+
+# ---- OS / IDE ----
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

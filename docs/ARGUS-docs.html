@@ -1,0 +1,329 @@
+<!doctype html><html><head><meta charset="utf-8"><title>ARGUS Documentation</title><style>
+:root{color-scheme:dark light}
+*{box-sizing:border-box}
+body{max-width:900px;margin:0 auto;padding:32px 24px 80px;font:16px/1.65 -apple-system,Segoe UI,Roboto,sans-serif;
+background:#0b1120;color:#e2e8f0}
+nav{position:sticky;top:0;background:#0b1120ee;backdrop-filter:blur(8px);padding:14px 0;margin-bottom:20px;border-bottom:1px solid #24304a;display:flex;gap:16px}
+nav a{color:#5b82f0;text-decoration:none;font-weight:600}
+h1{font-size:28px;border-bottom:2px solid #24304a;padding-bottom:10px;margin-top:8px}
+h2{font-size:21px;margin-top:32px;color:#fff}
+h3{font-size:17px;color:#cbd5e1}
+a{color:#5b82f0}
+code{background:#1b2436;padding:2px 6px;border-radius:5px;font-size:14px;color:#7dd3fc}
+pre{background:#111827;border:1px solid #24304a;border-radius:10px;padding:14px 16px;overflow-x:auto}
+pre code{background:none;color:#cbd5e1}
+table{border-collapse:collapse;width:100%;margin:16px 0;font-size:14.5px}
+th,td{border:1px solid #24304a;padding:9px 12px;text-align:left}
+th{background:#1b2436;color:#fff}
+tr:nth-child(even){background:#131c2e}
+blockquote{border-left:3px solid #5b82f0;margin:14px 0;padding:6px 16px;color:#94a3b8;background:#131c2e;border-radius:0 8px 8px 0}
+hr{border:none;border-top:1px solid #24304a;margin:44px 0}
+@media(prefers-color-scheme:light){body{background:#fff;color:#0f172a}nav{background:#ffffffee;border-color:#e2e8f0}h2{color:#0f172a}code{background:#f1f5f9;color:#0369a1}pre{background:#f8fafc;border-color:#e2e8f0}pre code{color:#334155}th{background:#f1f5f9;color:#0f172a}tr:nth-child(even){background:#f8fafc}blockquote{background:#f8fafc;color:#475569}}
+</style></head><body><nav><a href="#overview">Overview</a><a href="#demo-script">Demo Script</a><a href="#architecture">Architecture</a></nav><section id="overview"><h1 id="argus-ai-cyber-decision-intelligence-platform">ARGUS — AI Cyber Decision Intelligence Platform</h1>
+<blockquote>
+<p><strong>"We don't generate alerts. We generate decisions."</strong></p>
+</blockquote>
+<p>ARGUS is a production-inspired banking cybersecurity <strong>investigation</strong> platform. Modern banks
+already drown in alerts; the hard problem is <em>understanding what actually happened</em>. ARGUS
+automatically constructs complete investigations that answer six questions — <strong>what happened,
+why was it detected, what evidence supports it, what is the business impact, who was affected,
+and what should the bank do next</strong> — for both live threats and historically-disclosed weaknesses.</p>
+<p>Built for <strong>FinSpark'26 · Problem Statement 2</strong> (correlate cybersecurity telemetry with
+transactional behaviour, including harvest-now-decrypt-later quantum risk).</p>
+<hr />
+<h2 id="two-complementary-intelligence-engines">Two complementary intelligence engines</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Watchtower</strong> (forward)</th>
+<th><strong>Blast Radius</strong> (retrospective)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Question</td>
+<td>"Is this happening now?"</td>
+<td>"Now that we know this weakness existed, what happened before we found it?"</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>Isolation Forest scored against each entity's <strong>own</strong> Risk Memory baseline + deterministic correlation</td>
+<td>Deterministic SQL replay of the immutable event ledger over the exposure window</td>
+</tr>
+<tr>
+<td>Detects</td>
+<td>Account takeover, credential stuffing, insider misuse, API abuse</td>
+<td>Weak-cipher (Sweet32) exposure, quantum harvest-now-decrypt-later</td>
+</tr>
+</tbody>
+</table>
+<p>Both converge on one <strong>Business Impact</strong> assessment (₹ exposure, affected customers, regulatory
+obligations, executive priority), a strictly-grounded <strong>Explainable AI</strong> narrative, a <strong>Knowledge
+Graph</strong>, deterministic <strong>Recommendations</strong>, and exportable <strong>Reports</strong>.</p>
+<hr />
+<h2 id="tech-stack">Tech stack</h2>
+<ul>
+<li><strong>Backend:</strong> FastAPI · SQLAlchemy 2.0 · Alembic · Pydantic v2 (modular monolith, six layers)</li>
+<li><strong>Database:</strong> MySQL 8 (SQLite used only for the portable test suite)</li>
+<li><strong>Intelligence:</strong> scikit-learn (Isolation Forest) · NetworkX · deterministic SQL &amp; rules</li>
+<li><strong>AI Decision Layer:</strong> OpenRouter <em>(optional)</em> with a fully <strong>offline grounded narrator</strong> fallback</li>
+<li><strong>Reports:</strong> ReportLab (PDF) + JSON + CSV</li>
+<li><strong>Frontend:</strong> React + TypeScript + Vite (calm, executive, investigation-first UI)</li>
+<li><strong>Deploy:</strong> Docker + Docker Compose</li>
+</ul>
+<hr />
+<h2 id="quick-start">Quick start</h2>
+<p>You need a running <strong>MySQL 8</strong> and its root password. Three ways to run:</p>
+<h3 id="option-a-windows-native">Option A — Windows (native)</h3>
+<pre><code class="language-powershell"># 1. set your MySQL password
+notepad backend\.env        # set MYSQL_PASSWORD=...
+
+# 2. one-time setup (venv, deps, frontend build, migrate, seed, run engines)
+.\scripts\setup.ps1
+
+# 3. launch  -&gt;  http://localhost:8000
+.\scripts\run.ps1
+</code></pre>
+<h3 id="option-b-macos-linux-native">Option B — macOS / Linux (native)</h3>
+<pre><code class="language-bash"># set MYSQL_PASSWORD in backend/.env, then:
+./scripts/run.sh            # sets up venv+build+migrate+seed on first run, then serves
+</code></pre>
+<h3 id="option-c-docker-bundles-mysql-zero-local-deps">Option C — Docker (bundles MySQL, zero local deps)</h3>
+<pre><code class="language-bash">docker compose up --build   #  -&gt;  http://localhost:8000
+</code></pre>
+<p>Open <strong>http://localhost:8000</strong>. Click <strong>"Rebuild demo"</strong> (top-right) any time to regenerate the
+synthetic ecosystem and re-run every engine end to end.</p>
+<blockquote>
+<p><strong>AI note:</strong> ARGUS works with <strong>no internet and no API key</strong> — the offline grounded narrator
+produces the explanations. To use a live LLM, set <code>OPENROUTER_API_KEY</code> in <code>backend/.env</code>.</p>
+</blockquote>
+<p>Default login (JWT is wired but not enforced in the demo): <code>analyst</code> / <code>analyst123</code>.</p>
+<hr />
+<h2 id="the-application-9-screens">The application (9 screens)</h2>
+<p><code>Investigation Queue</code> · <code>Investigation Workspace</code> · <code>Watchtower</code> · <code>Blast Radius</code> ·
+<code>Risk Memory</code> · <code>Knowledge Graph</code> · <code>Reports</code> · <code>Integrations</code> · <code>Settings</code></p>
+<p>The <strong>Investigation Workspace</strong> is the heart of the product: executive summary → chronological
+timeline → categorized evidence (with confidence contributions) → Business Impact → confidence
+breakdown → multi-audience AI narratives → recommendations → knowledge graph — one continuous
+investigation, no context switching.</p>
+<hr />
+<h2 id="testing">Testing</h2>
+<pre><code class="language-bash">cd backend &amp;&amp; .venv/Scripts/python -m pytest -q     # (or .venv/bin/python on *nix)
+</code></pre>
+<p>The suite runs against a throwaway SQLite database (no MySQL needed) and includes the
+<strong>Blast Radius exact-reconstruction spine</strong>: reconstruction must equal the ledger ground truth,
+no more and no less.</p>
+<hr />
+<h2 id="architecture">Architecture</h2>
+<p>Six layers, each talking only to the one beneath it:</p>
+<pre><code>Presentation (React)  -&gt;  API (FastAPI routers)  -&gt;  AI Decision (grounded narratives)
+   -&gt;  Core Intelligence (Risk Memory, Watchtower, Blast Radius, Business Impact,
+        Knowledge Graph)  -&gt;  Data (SQLAlchemy models + immutable event ledger)  -&gt;  Infrastructure
+</code></pre>
+<p>Data lifecycle: <strong>raw events → normalized ledger → correlated evidence → investigations →
+business decisions → executive reports.</strong> Every stage increases the value of the information.</p>
+<pre><code>backend/
+  app/
+    core/         config, logging, database, security, response envelope, exceptions
+    models/       Customer, Account, Device, IP, Session, AuthEvent, Transaction, Endpoint,
+                  Vulnerability, EventLedger, Investigation, Evidence, RiskMemory,
+                  BusinessImpact, AINarrative, Recommendation, Report, Analyst
+    modules/      ingestion · risk_memory · watchtower · blast_radius · business_impact ·
+                  knowledge_graph · explain · reporting · investigations · pipeline
+    api/v1/       thin routers (one per capability) — business logic stays in services
+    synthetic/    deterministic banking ecosystem + 6 investigation scenarios
+  alembic/        versioned migrations
+  tests/          unit + integration + e2e (SQLite)
+frontend/         React + TS + Vite (served compiled by FastAPI in production)
+deployment/       entrypoint
+docs/             DEMO.md, ARCHITECTURE.md
+scripts/          setup / run / seed
+</code></pre>
+<p>See <a href="docs/ARCHITECTURE.md"><code>docs/ARCHITECTURE.md</code></a> for module contracts and
+<a href="docs/DEMO.md"><code>docs/DEMO.md</code></a> for the judge walkthrough and Q&amp;A.</p>
+<p>API docs are live at <strong>/docs</strong> (OpenAPI) when the server is running.</p></section><hr><section id="demo-script"><h1 id="argus-judge-demonstration-script">ARGUS — Judge Demonstration Script</h1>
+<p><strong>Goal:</strong> guide judges through <em>one continuous investigation story</em>, not a feature tour.
+Total time ≈ 6–7 minutes. Speak the business problem first, let each investigation tell itself.</p>
+<p>Before you start: click <strong>Rebuild demo</strong> (top-right) so the queue is fresh. Everything is
+deterministic — the same scenarios appear every run.</p>
+<hr />
+<h2 id="0-the-one-sentence-pitch">0. The one-sentence pitch</h2>
+<blockquote>
+<p>"ARGUS transforms fragmented banking cybersecurity data into explainable, evidence-driven
+business decisions — combining behavioural intelligence, historical exposure reconstruction,
+executive impact analysis and AI explainability in one investigation platform."</p>
+</blockquote>
+<h2 id="1-investigation-queue-the-homepage">1. Investigation Queue (the homepage)</h2>
+<ul>
+<li>Not a dashboard of charts — a prioritized <strong>work queue</strong>. Point out the top metrics
+  (active / critical / today).</li>
+<li>Note investigations come from <strong>two engines</strong>: Watchtower (live) and Blast Radius
+  (retrospective). Sorted so business impact rises to the top.</li>
+</ul>
+<h2 id="2-watchtower-account-takeover-open-arg-account_takeover-3-cr-94">2. Watchtower — Account Takeover  <em>(open ARG- account_takeover, ~₹3 Cr, 94%)</em></h2>
+<ul>
+<li><strong>Executive Summary</strong> (read it aloud): a trusted customer, new device, foreign country, a
+  transfer ~15× their historical average.</li>
+<li><strong>Timeline</strong> → <strong>Evidence</strong>: emphasize the investigation came from <em>correlated</em> deviations,
+  not one alert (new device + geo + amount + IP reputation).</li>
+<li><strong>Confidence Breakdown</strong>: show it's decomposed — Isolation Forest score <em>plus</em> interpretable
+  factors. "Analysts see exactly why it's 94%, not a black box."</li>
+<li><strong>Business Impact</strong>: ₹ exposure, executive priority P1, regulatory flags.</li>
+</ul>
+<h2 id="3-risk-memory">3. Risk Memory</h2>
+<ul>
+<li>Search the affected customer. "ARGUS compares each customer against <strong>their own</strong> history —
+  trusted devices, normal regions, typical amounts — which is why false positives stay low."</li>
+</ul>
+<h2 id="4-knowledge-graph">4. Knowledge Graph</h2>
+<ul>
+<li>Open the graph for the investigation. Click the customer / attacker device / IP nodes.
+  "Relationship context, not decoration."</li>
+</ul>
+<h2 id="5-blast-radius-the-headline-open-the-sweet32-retrospective-25-cr-96">5. Blast Radius — the headline  <em>(open the Sweet32 retrospective, ~₹25 Cr, 96%)</em></h2>
+<ul>
+<li>Switch framing: "This isn't live detection. A weak cipher (Sweet32 / 3DES) was just disclosed
+  on a legacy payments endpoint. The question executives ask is: <em>what already went through it?</em>"</li>
+<li>Show the reconstruction: <strong>~941 transactions, ₹25 crore, 45 customers</strong> — deterministic replay
+  of the immutable ledger over the exposure window. <strong>PCI-DSS</strong> flagged automatically.</li>
+<li>Emphasize: <strong>exact, auditable, reproducible</strong> — SQL, not a guess.</li>
+</ul>
+<h2 id="6-quantum-harvest-now-decrypt-later-open-the-quantum_exposure-investigation">6. Quantum — Harvest-Now-Decrypt-Later  <em>(open the quantum_exposure investigation)</em></h2>
+<ul>
+<li>"RSA-2048 key exchange on the encryption gateway. Under harvest-now-decrypt-later, ciphertext
+  captured today is decryptable once quantum is practical." ARGUS reconstructs the <strong>sensitive
+  population at risk</strong> and labels it <em>potential future exposure</em> (not confirmed) — honest about
+  certainty.</li>
+</ul>
+<h2 id="7-explainable-ai">7. Explainable AI</h2>
+<ul>
+<li>On any investigation, flip the <strong>AI Decision</strong> tabs (Executive / Technical / Confidence /
+  Evidence / Actions). "The model didn't <em>detect</em> anything — every sentence is grounded in the
+  structured evidence the engines produced. It explains; it never invents."</li>
+</ul>
+<h2 id="8-reports">8. Reports</h2>
+<ul>
+<li>Generate an <strong>Executive PDF</strong> from a Blast Radius case and download it. "Evidence-based,
+  audit-ready, suitable for executives and regulators without editing."</li>
+</ul>
+<h2 id="9-close-the-loop">9. Close the loop</h2>
+<ul>
+<li>Back on the investigation: <strong>Assign / Escalate / Close</strong> — full audit trail. "ARGUS manages the
+  entire lifecycle from ingestion to executive decision in one platform."</li>
+</ul>
+<hr />
+<h2 id="anticipated-questions">Anticipated questions</h2>
+<ul>
+<li><strong>Why Isolation Forest?</strong> We mostly have examples of <em>legitimate</em> behaviour, not labelled
+  fraud — Isolation Forest finds statistical outliers without needing fraud labels. It's one
+  contributor to confidence, never the sole decider.</li>
+<li><strong>Why does Risk Memory reduce false positives?</strong> Every entity is judged against its own
+  baseline, not the population — ₹10L is normal for one customer, alarming for another.</li>
+<li><strong>Why is Blast Radius reconstruction, not prediction?</strong> Many breaches are only understood after
+  disclosure. Reconstruction over an immutable ledger is exact and auditable; prediction is not.</li>
+<li><strong>Why is the LLM limited to explanation?</strong> Determinism and trust. Detection and business logic
+  are deterministic and testable; the LLM only translates evidence into language, with a
+  hallucination guard and an offline fallback.</li>
+<li><strong>Why a modular monolith?</strong> Simplicity that still demonstrates the full vision; every module
+  has a clean interface and could be extracted into a service later.</li>
+<li><strong>Is it really running?</strong> Yes — <code>pytest</code> asserts the Blast Radius reconstruction equals the
+  ledger ground truth exactly, and the numbers are reproducible on every machine.</li>
+</ul></section><hr><section id="architecture"><h1 id="argus-architecture">ARGUS — Architecture</h1>
+<h2 id="layers-strict-downward-dependency">Layers (strict downward dependency)</h2>
+<ol>
+<li><strong>Presentation</strong> — React/TS. Visualization only; no business logic.</li>
+<li><strong>API</strong> — FastAPI routers. Validate requests, delegate to services, format the response
+   envelope. No business logic in routes.</li>
+<li><strong>AI Decision</strong> — turns structured investigations into grounded narratives (OpenRouter or
+   offline). Consumes only validated evidence; never touches raw data.</li>
+<li><strong>Core Intelligence</strong> — Risk Memory, Watchtower, Blast Radius, Business Impact, Knowledge Graph.</li>
+<li><strong>Data</strong> — SQLAlchemy models + the immutable <strong>event ledger</strong> (the spine).</li>
+<li><strong>Infrastructure</strong> — config, logging, database, security, error handling.</li>
+</ol>
+<h2 id="the-central-object-the-investigation">The central object: the Investigation</h2>
+<p>Every module either <strong>creates, enriches, explains, visualizes, or resolves</strong> investigations.
+Evidence, Business Impact, AI Narratives, Recommendations and Reports are all separate tables
+referencing the Investigation, so history is preserved and assessments evolve independently.</p>
+<h2 id="module-contracts">Module contracts</h2>
+<table>
+<thead>
+<tr>
+<th>Module</th>
+<th>Owns</th>
+<th>Public surface</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ingestion</code></td>
+<td>validate → normalize (UTC) → enrich → commit to ledger → audit</td>
+<td><code>IngestionService.ingest_*</code></td>
+</tr>
+<tr>
+<td><code>risk_memory</code></td>
+<td>evolving per-entity behavioural profiles (trust vs confidence, decay, feedback)</td>
+<td><code>get_*_profile</code>, <code>recompute_all</code>, <code>apply_feedback</code></td>
+</tr>
+<tr>
+<td><code>watchtower</code></td>
+<td>feature engineering vs Risk Memory + Isolation Forest + correlation rules → investigations</td>
+<td><code>WatchtowerService.analyze</code></td>
+</tr>
+<tr>
+<td><code>blast_radius</code></td>
+<td>disclosure-triggered deterministic ledger replay → retrospective investigations</td>
+<td><code>reconstruct</code>, <code>analyze_all</code></td>
+</tr>
+<tr>
+<td><code>business_impact</code></td>
+<td>₹ exposure, segmentation, regulatory, executive priority (≠ severity), recommendations</td>
+<td><code>BusinessImpactService.assess</code></td>
+</tr>
+<tr>
+<td><code>explain</code></td>
+<td>grounded executive/technical/confidence/evidence/action narratives + hallucination guard</td>
+<td><code>ExplainService.generate</code></td>
+</tr>
+<tr>
+<td><code>knowledge_graph</code></td>
+<td>NetworkX subgraph built on demand from relational data + node context</td>
+<td><code>investigation_graph</code>, <code>node_context</code></td>
+</tr>
+<tr>
+<td><code>reporting</code></td>
+<td>ReportLab PDF + JSON + CSV, versioned + hashed</td>
+<td><code>ReportService.generate</code></td>
+</tr>
+<tr>
+<td><code>investigations</code></td>
+<td>lifecycle + list/detail serialization</td>
+<td><code>InvestigationService</code></td>
+</tr>
+<tr>
+<td><code>pipeline</code></td>
+<td>orchestrates reset → Risk Memory → Watchtower → Blast Radius → enrichment</td>
+<td><code>run_detection</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="data-flow">Data flow</h2>
+<pre><code>event  -&gt;  ingestion  -&gt;  event_ledger (immutable)
+                             |
+        Risk Memory  &lt;-------+-------&gt; Watchtower --------\
+                             |                             &gt; Investigation + Evidence
+        Blast Radius  &lt;------+  (disclosure replay) ------/
+                             v
+                    Business Impact  -&gt;  Explainable AI  -&gt;  Knowledge Graph  -&gt;  Reports
+</code></pre>
+<h2 id="key-engineering-decisions">Key engineering decisions</h2>
+<ul>
+<li><strong>Isolation Forest</strong> — unlabelled outlier detection; one input to a transparent confidence score.</li>
+<li><strong>Deterministic Blast Radius</strong> — reconstruction must be exact and auditable; SQL over an
+  immutable ledger beats probabilistic inference.</li>
+<li><strong>Business priority ≠ technical severity</strong> — a simple credential compromise touching thousands
+  of active customers can outrank a sophisticated attack on an isolated test system.</li>
+<li><strong>LLM explains, never decides</strong> — deterministic detection/logic + grounded narration with an
+  offline fallback, so the platform is trustworthy, testable and network-independent.</li>
+<li><strong>MySQL in production, SQLite for tests</strong> — same SQLAlchemy models; one connection-string switch.</li>
+</ul></section><hr></body></html>
