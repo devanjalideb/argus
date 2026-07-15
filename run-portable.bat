@@ -14,19 +14,29 @@ echo    ARGUS - portable launcher (SQLite mode)
 echo ================================================
 echo.
 
-where python >nul 2>&1
-if errorlevel 1 (
-  echo [ERROR] Python was not found.
-  echo Install Python 3.11+ from https://www.python.org/downloads/
-  echo IMPORTANT: tick "Add python.exe to PATH" during install, then run this again.
+REM --- locate Python even if python.exe was not added to PATH ---
+set "PYCMD="
+python --version >nul 2>&1 && set "PYCMD=python"
+if not defined PYCMD py --version >nul 2>&1 && set "PYCMD=py"
+if not defined PYCMD if exist "%LocalAppData%\Programs\Python\Python313\python.exe" set "PYCMD=%LocalAppData%\Programs\Python\Python313\python.exe"
+if not defined PYCMD if exist "%LocalAppData%\Programs\Python\Python312\python.exe" set "PYCMD=%LocalAppData%\Programs\Python\Python312\python.exe"
+if not defined PYCMD if exist "%LocalAppData%\Programs\Python\Python311\python.exe" set "PYCMD=%LocalAppData%\Programs\Python\Python311\python.exe"
+if not defined PYCMD if exist "%ProgramFiles%\Python313\python.exe" set "PYCMD=%ProgramFiles%\Python313\python.exe"
+if not defined PYCMD (
+  echo [ERROR] Python 3.11+ was not found.
+  echo   - If it IS installed, re-run the python.org installer, choose "Modify",
+  echo     and tick "Add Python to environment variables".
+  echo   - Otherwise install it from https://www.python.org/downloads/
+  echo     ^(tick "Add python.exe to PATH"^).
   echo.
   pause
   exit /b 1
 )
+echo Using Python: %PYCMD%
 
 if not exist "%PY%" (
   echo [1/4] Creating Python environment ^(first run only, ~2 min, needs internet^)...
-  python -m venv "%ROOT%backend\.venv"
+  "%PYCMD%" -m venv "%ROOT%backend\.venv"
   "%PY%" -m pip install --upgrade pip
   "%PY%" -m pip install -r "%ROOT%backend\requirements.txt"
 ) else (
