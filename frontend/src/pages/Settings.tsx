@@ -1,5 +1,13 @@
 import { api, titleCase } from "../api";
-import { Card, useAsync } from "../ui";
+import { Card, Icon, useAsync } from "../ui";
+
+const PLATFORM_SECURITY = [
+  ["Role-Based Access Control", "Analyst, security-manager and CISO roles gate every action and view."],
+  ["Encrypted Investigation Storage", "Investigations and their evidence are held in encrypted storage at rest."],
+  ["Immutable Audit Trail", "Every analyst decision is appended to a tamper-evident action ledger."],
+  ["Evidence Integrity Verification", "Generated reports carry SHA-256 integrity hashes; evidence is append-only."],
+  ["Secure AI Narration (Grounded Responses Only)", "The AI explains structured evidence only — it never fabricates facts."],
+];
 
 export default function Settings() {
   const { data: info } = useAsync(() => api.info(), []);
@@ -49,6 +57,26 @@ export default function Settings() {
           </p>
           <p className="tagline" style={{ marginTop: 12 }}>"We don't generate alerts. We generate decisions."</p>
         </Card>
+
+        <div style={{ gridColumn: "1 / -1" }}>
+          <Card title="Platform Security" icon="lock">
+            <p className="muted" style={{ fontSize: 12.5, marginBottom: 14 }}>
+              ARGUS's own security posture — the controls that protect investigation data and
+              keep AI-generated conclusions trustworthy.
+            </p>
+            <div className="why-list">
+              {PLATFORM_SECURITY.map(([label, detail]) => (
+                <div className="why-item" key={label}>
+                  <span className="ic"><Icon name="check" size={15} /></span>
+                  <div>
+                    <div className="wt">{label}</div>
+                    <div className="wd">{detail}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        </div>
       </div>
     </div>
   );

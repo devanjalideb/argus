@@ -22,6 +22,13 @@ from app.models import (
 
 logger = get_logger(__name__)
 
+# Rotating roster used to give demo investigations realistic assignees instead of
+# "Unassigned". Applied only to seeded/demo data; the live assign() API is unaffected.
+_DEMO_ANALYSTS = [
+    "SOC Tier 2", "A. Sharma", "Incident Response", "SOC Tier 1",
+    "R. Iyer", "Threat Intel", "K. Menon", "SOC Tier 3",
+]
+
 
 def reset_investigations(session: Session) -> None:
     for model in (Evidence, BusinessImpact, AINarrative, Recommendation, Report,
@@ -46,7 +53,25 @@ def run_detection(session: Session, reset: bool = True, enrich: bool = True) -> 
     result = {"watchtower": watch, "blast_radius": blast}
     if enrich:
         result["enrichment"] = _enrich_all(session)
+    _assign_demo_analysts(session)
     return result
+
+
+def _assign_demo_analysts(session: Session) -> None:
+    """Give every demo investigation a realistic owner (rotating), replacing 'Unassigned'.
+
+    Deterministic (ordered by code) so the demo is stable across rebuilds. Only sets the
+    ``owner`` display field on seeded data; the manual assign() workflow is untouched, and any
+    investigation already owned by a human is left as-is.
+    """
+    invs = session.scalars(select(Investigation).order_by(Investigation.code)).all()
+    assigned = 0
+    for idx, inv in enumerate(invs):
+        if not inv.owner:
+            inv.owner = _DEMO_ANALYSTS[idx % len(_DEMO_ANALYSTS)]
+            assigned += 1
+    session.commit()
+    logger.info("Assigned %d demo investigation(s) to analysts.", assigned)
 
 
 def _enrich_all(session: Session) -> dict:
