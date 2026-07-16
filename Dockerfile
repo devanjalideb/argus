@@ -12,6 +12,12 @@ FROM python:3.12-slim AS backend
 ENV PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
 WORKDIR /app
 
+# DejaVu ships the ₹ (U+20B9) glyph so generated PDFs render Rupee amounts correctly
+# (python:3.12-slim carries no fonts by default). The PDF builder auto-detects it.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY backend/requirements.txt backend/requirements.txt
 RUN pip install --no-cache-dir -r backend/requirements.txt
 

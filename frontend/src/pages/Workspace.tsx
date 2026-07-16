@@ -33,6 +33,17 @@ export default function Workspace() {
   const bi = d.business_impact || {};
   const nar = d.ai_narrative;
 
+  // Decision Summary + explainability are derived from data already on the investigation.
+  const cb: any[] = d.confidence_breakdown || [];
+  const rootCause = d.vulnerability?.title || cb[0]?.factor || d.evidence?.[0]?.title
+    || titleCase(d.category);
+  const recAction = d.recommendations?.[0]?.title || nar?.recommended_action_summary
+    || "Route to analyst for triage";
+  const flagPoints = (cb.length
+    ? cb.map((b) => ({ label: b.factor, detail: b.detail }))
+    : (d.evidence || []).map((e: any) => ({ label: e.title, detail: e.description }))
+  ).slice(0, 6);
+
   return (
     <div className="page">
       <div className="row" style={{ marginBottom: 12 }}>
@@ -60,6 +71,17 @@ export default function Workspace() {
         </div>
       </div>
 
+      <Card title="Decision Summary" icon="activity">
+        <div className="decision-grid">
+          <div className="decision-cell"><div className="k">Threat Type</div><div className="v small">{titleCase(d.category)}</div></div>
+          <div className="decision-cell accent"><div className="k">Business Impact</div><div className="v tnum">{inr(bi.financial_exposure)}</div></div>
+          <div className="decision-cell"><div className="k">Customers Affected</div><div className="v tnum">{bi.affected_customers ?? 0}</div></div>
+          <div className="decision-cell"><div className="k">Confidence</div><div className="v tnum">{d.confidence?.toFixed(0)}%</div></div>
+          <div className="decision-cell"><div className="k">Root Cause</div><div className="v small">{rootCause}</div></div>
+          <div className="decision-cell"><div className="k">Recommended Action</div><div className="v small">{recAction}</div></div>
+        </div>
+      </Card>
+
       {nar?.executive_summary && (
         <div className="exec-summary">
           <div className="lbl">Executive Summary · AI ({nar.provider})</div>
@@ -69,6 +91,28 @@ export default function Workspace() {
 
       <div className="ws-grid">
         <div className="grid" style={{ gap: 18 }}>
+          <Card title="Why ARGUS Flagged This Investigation" icon="shield">
+            {flagPoints.length ? (
+              <>
+                <div className="why-list">
+                  {flagPoints.map((p, i) => (
+                    <div className="why-item" key={i}>
+                      <span className="ic"><Icon name="check" size={15} /></span>
+                      <div>
+                        <div className="wt">{p.label}</div>
+                        {p.detail && <div className="wd">{p.detail}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="why-confidence">
+                  <span>Overall Confidence</span>
+                  <b>{d.confidence?.toFixed(0)}%</b>
+                </div>
+              </>
+            ) : <p className="muted">No reasoning factors recorded.</p>}
+          </Card>
+
           <Card title="Investigation Timeline" icon="clock">
             {(d.timeline?.length || d.meta?.timeline?.length) ? (
               <div className="timeline">

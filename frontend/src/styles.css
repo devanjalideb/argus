@@ -353,6 +353,24 @@ table.data tbody tr:last-child td { border-bottom: none; }
 .impact-cell .v { font-size: 16px; font-weight: 700; margin-top: 3px; letter-spacing: -0.3px; color: var(--text-primary); }
 .impact-cell.big .v { font-size: 20px; color: var(--critical-text); }
 
+/* ---------------------------------------------------------------- decision summary */
+.decision-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border-hairline); border-radius: var(--radius-card-nested); overflow: hidden; }
+.decision-cell { background: var(--bg-panel); padding: 14px 16px; }
+.decision-cell .k { font-size: 10.5px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.04em; }
+.decision-cell .v { font-size: 17px; font-weight: 700; margin-top: 4px; letter-spacing: -0.3px; color: var(--text-primary); }
+.decision-cell .v.small { font-size: 13.5px; font-weight: 600; line-height: 1.35; letter-spacing: 0; }
+.decision-cell.accent .v { color: var(--critical-text); }
+@media (max-width: 720px) { .decision-grid { grid-template-columns: 1fr 1fr; } }
+
+/* ---------------------------------------------------------------- explainability panel */
+.why-list { display: flex; flex-direction: column; gap: 10px; }
+.why-item { display: flex; gap: 10px; align-items: flex-start; }
+.why-item .ic { color: var(--success-text); flex-shrink: 0; margin-top: 1px; display: inline-flex; }
+.why-item .wt { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.why-item .wd { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+.why-confidence { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-hairline); display: flex; justify-content: space-between; align-items: center; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-tertiary); font-weight: 700; }
+.why-confidence b { font-size: 22px; color: var(--accent-violet-bright); font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
+
 /* ---------------------------------------------------------------- graph */
 .graph-wrap { position: relative; width: 100%; height: 560px; background: radial-gradient(circle at 50% 45%, rgba(110, 86, 232, 0.05), transparent 60%), var(--bg-canvas); border: 1px solid var(--border-hairline); border-radius: var(--radius-panel); overflow: hidden; }
 .graph-svg { width: 100%; height: 100%; display: block; cursor: grab; }
