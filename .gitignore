@@ -33,3 +33,6 @@ design-review/
 Thumbs.db
 .vscode/
 .idea/
+
+# Design reference image kept local only (removed from repo per request)
+design-reference/
